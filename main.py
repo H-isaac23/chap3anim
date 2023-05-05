@@ -207,6 +207,105 @@ class AFunc(Slide):
         # self.play()
 
 
+class NN(Slide):
+    def play_next(self):
+        indicator = Arrow(buff=0.75)
+        indicator.to_edge(DOWN).to_edge(RIGHT)
+
+        self.play(FadeIn(indicator), run_time=0.75)
+
+        self.wait(1)
+        self.next_slide()
+        self.play(Uncreate(indicator), run_time=0.75)
+
+    def construct(self):
+        self.camera.background_color = "#141414"
+
+        c1, c2, c3 = Circle(radius=0.25, color=WHITE, stroke_width=1.25), Circle(
+            radius=0.25, color=WHITE, stroke_width=1.25), Circle(radius=0.25, color=WHITE, stroke_width=1.25)
+        c1.next_to(c2, 2*UP)
+        c3.next_to(c2, 2*DOWN)
+
+        layer1 = VGroup(c1, c2, c3)
+        layer2 = layer1.copy()
+        layer3 = layer2.copy()
+        output_layer = Circle(radius=0.25, stroke_width=1.25, color=WHITE)
+
+        layer1.shift(2.5*LEFT)
+        layer3.shift(2.5*RIGHT)
+        output_layer.shift(5*RIGHT)
+
+        ls1 = VGroup()
+        ls2 = VGroup()
+        ls3 = VGroup()
+
+        for n in layer1:
+            line_start = n.get_edge_center(RIGHT)
+            line_ends = []
+            for n_j in layer2:
+                line_ends.append(n_j.get_edge_center(LEFT))
+
+            for end in line_ends:
+                l = Line(line_start, end, stroke_width=0.75, color=GRAY)
+                ls1.add(l)
+
+        for n in layer2:
+            line_start = n.get_edge_center(RIGHT)
+            line_ends = []
+            for n_j in layer3:
+                line_ends.append(n_j.get_edge_center(LEFT))
+
+            for end in line_ends:
+                l = Line(line_start, end, stroke_width=0.75, color=GRAY)
+                ls2.add(l)
+
+        for n in layer3:
+            line_start = n.get_edge_center(RIGHT)
+            line_end = output_layer.get_edge_center(LEFT)
+            l = Line(line_start, line_end, stroke_width=0.75, color=GRAY)
+            ls3.add(l)
+
+        input_vec = Matrix([[2], [3]])
+        input_vec.next_to(layer1, 3*LEFT).scale(0.6)
+
+        # self.add(layer1, layer2, layer3, output_layer, ls1, ls2, ls3)
+        # self.add(input_vec)
+        self.play(Create(layer1), Create(layer2),
+                  Create(layer3), Create(output_layer))
+        self.play(Create(ls1), Create(ls2), Create(ls3))
+        self.play(Create(input_vec))
+
+        # Forward prop
+        self.play(input_vec.animate.next_to(layer1, UP))
+        self.play(input_vec.animate.shift(DOWN*2.5).set_opacity(0))
+        self.play(layer1.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer1.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls1.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(layer2.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer2.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls2.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(layer3.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer3.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls3.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(output_layer.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(output_layer.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+
+        # Backprop
+
+        self.wait(3)
+
+
 # class Example(Slide):
 #     def construct(self):
 #         text = Text("Hello World!")
