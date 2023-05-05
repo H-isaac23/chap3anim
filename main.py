@@ -235,9 +235,14 @@ class NN(Slide):
         layer3.shift(2.5*RIGHT)
         output_layer.shift(5*RIGHT)
 
+        lsin = VGroup()
         ls1 = VGroup()
         ls2 = VGroup()
         ls3 = VGroup()
+
+        ls4 = VGroup()
+        ls5 = VGroup()
+        ls6 = VGroup()
 
         for n in layer1:
             line_start = n.get_edge_center(RIGHT)
@@ -247,7 +252,9 @@ class NN(Slide):
 
             for end in line_ends:
                 l = Line(line_start, end, stroke_width=0.75, color=GRAY)
+                l2 = Line(end, line_start, stroke_width=0.75, color=GRAY)
                 ls1.add(l)
+                ls4.add(l2)
 
         for n in layer2:
             line_start = n.get_edge_center(RIGHT)
@@ -257,16 +264,41 @@ class NN(Slide):
 
             for end in line_ends:
                 l = Line(line_start, end, stroke_width=0.75, color=GRAY)
+                l2 = Line(end, line_start, stroke_width=0.75, color=GRAY)
                 ls2.add(l)
+                ls5.add(l2)
 
         for n in layer3:
             line_start = n.get_edge_center(RIGHT)
             line_end = output_layer.get_edge_center(LEFT)
             l = Line(line_start, line_end, stroke_width=0.75, color=GRAY)
+            l2 = Line(line_end, line_start, stroke_width=0.75, color=GRAY)
+
             ls3.add(l)
+            ls6.add(l2)
 
         input_vec = Matrix([[2], [3]])
         input_vec.next_to(layer1, 3*LEFT).scale(0.6)
+        input_dot = Dot()
+        input_dot.move_to(input_vec.get_center())
+
+        for n in layer1:
+            start = input_dot.get_center()
+            end = n.get_edge_center(LEFT)
+            l = Line(start, end, stroke_width=0.75, color=GRAY)
+            lsin.add(l)
+
+        w1 = ValueTracker(0)
+        w2 = ValueTracker(0)
+        b = ValueTracker(0)
+
+        w_text = MathTex(
+            f"w=[{w1.get_value():.2f},{w2.get_value():.2f}]", font_size=22)
+        w_text.to_edge(LEFT)
+        w_text.add_updater(
+            lambda m: m.become(
+                MathTex(f"w=[{w1.get_value():.2f},{w2.get_value():.2f}]", font_size=22).to_edge(LEFT))
+        )
 
         # self.add(layer1, layer2, layer3, output_layer, ls1, ls2, ls3)
         # self.add(input_vec)
@@ -276,8 +308,12 @@ class NN(Slide):
         self.play(Create(input_vec))
 
         # Forward prop
-        self.play(input_vec.animate.next_to(layer1, UP))
-        self.play(input_vec.animate.shift(DOWN*2.5).set_opacity(0))
+        # self.play(input_vec.animate.next_to(layer1, UP))
+        # self.play(input_vec.animate.shift(DOWN*2.5).set_opacity(0))
+        self.play(input_vec.animate.become(input_dot))
+        self.play(Uncreate(input_vec), ShowPassingFlash(lsin.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(Create(w_text), run_time=1)
         self.play(layer1.animate.set_fill(
             WHITE, opacity=0.5), run_time=0.25)
         self.play(layer1.animate.set_fill(
@@ -302,8 +338,37 @@ class NN(Slide):
             WHITE, opacity=0), run_time=0.25)
 
         # Backprop
+        self.remove(ls1, ls2, ls3)
+        self.add(ls4, ls5, ls6)
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+
+        self.play(
+            w1.animate.set_value(0.5), w2.animate.set_value(0.15),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 2
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(0.735), w2.animate.set_value(0.35),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
 
         self.wait(3)
+
+        # TODO: Add weights and biases text beside NN that updates as backprop progresses
 
 
 # class Example(Slide):
