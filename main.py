@@ -89,7 +89,7 @@ class AFunc(Slide):
 
     def construct(self):
         self.camera.background_color = "#141414"
-        self.play_next()
+        # self.play_next()
 
         # Sigmoid Function
         sig_title = Text("Sigmoid Function")
@@ -104,23 +104,23 @@ class AFunc(Slide):
         sig_use = Text("Mainly used in binary classification.", font_size=24)
 
         # Animation Part 1
-        self.play(Create(sig_title))
-        self.wait(1)
+        # self.play(Create(sig_title))
+        # self.wait(1)
 
-        self.play(Create(sig_eq))
-        self.wait(1)
+        # self.play(Create(sig_eq))
+        # self.wait(1)
 
-        self.play(sig_eq.animate.to_edge(LEFT))
-        self.play(FadeIn(z_def), FadeIn(z_meaning))
-        self.play_next()
+        # self.play(sig_eq.animate.to_edge(LEFT))
+        # self.play(FadeIn(z_def), FadeIn(z_meaning))
+        # self.play_next()
 
-        self.play(FadeOut(z_def, z_meaning))
-        self.play(FadeIn(sig_use))
-        self.play_next()
+        # self.play(FadeOut(z_def, z_meaning))
+        # self.play(FadeIn(sig_use))
+        # self.play_next()
 
-        self.play(Uncreate(sig_use), Uncreate(sig_eq),
-                  sig_title.animate.to_edge(LEFT))
-        self.wait(1)
+        # self.play(Uncreate(sig_use), Uncreate(sig_eq),
+        #           sig_title.animate.to_edge(LEFT))
+        # self.wait(1)
 
         # Part 2
 
@@ -177,32 +177,62 @@ class AFunc(Slide):
         sig_prob_text_1.next_to(sig_x_val, LEFT)
 
         # Animation Part 2
-        self.play(Create(ax), Create(graph), run_time=2)
-        self.play(Create(dot))
-        self.play_next()
+        # self.play(Create(ax), Create(graph), run_time=2)
+        # self.play(Create(dot))
+        # self.play_next()
 
-        self.play(Flash(dot))
-        self.play_next()
+        # self.play(Flash(dot))
+        # self.play_next()
 
-        self.play(Create(sig_prob_text_1), Create(sig_prob_text_2),
-                  Create(sig_x_val), Create(sig_prob))
-        self.play(
-            t.animate.set_value(5.5),
-            run_time=3,
-            rate_func=rate_functions.ease_in_out_cubic)
-        self.play_next()
+        # self.play(Create(sig_prob_text_1), Create(sig_prob_text_2),
+        #           Create(sig_x_val), Create(sig_prob))
+        # self.play(
+        #     t.animate.set_value(5.5),
+        #     run_time=3,
+        #     rate_func=rate_functions.ease_in_out_cubic)
+        # self.play_next()
 
-        self.play(
-            t.animate.set_value(-3),
-            run_time=3,
-            rate_func=rate_functions.ease_in_out_cubic
+        # self.play(
+        #     t.animate.set_value(-3),
+        #     run_time=3,
+        #     rate_func=rate_functions.ease_in_out_cubic
+        # )
+
+        # self.play_next()
+
+        # self.play(FadeOut(ax, graph, dot, sig_prob_text_1,
+        #           sig_prob_text_2, sig_eq, sig_x_val, sig_title, sig_prob))
+        # self.wait(2)
+
+        # Relu func
+        relu = MathTex("max(0, z)")
+        # relu.to_edge(LEFT)
+        relu_title = Text("Rectified Linear Unit", font_size=24)
+        relu_title.to_edge(UP)
+
+        relu_ax = Axes(
+            x_range=[-10, 10],
+            y_range=[0, 10]
         )
 
-        self.play_next()
+        relu_graph = relu_ax.plot(lambda x: max(0, x),
+                                  x_range=[-10, 8], color=BLUE)
+        relu_t = ValueTracker(-5)
+        relu_dot = Dot()
+        relu_dot.move_to(relu_ax.c2p(
+            relu_t.get_value(), max(0, relu_t.get_value())))
+        relu_dot.add_updater(
+            lambda m: m.move_to(relu_ax.c2p(
+                relu_t.get_value(), max(0, relu_t.get_value())))
+        )
 
-        self.play(FadeOut(ax, graph, dot, sig_prob_text_1,
-                  sig_prob_text_2, sig_eq, sig_x_val, sig_title, sig_prob))
-        self.wait(2)
+        # self.add(relu_ax, relu_graph, relu_title, relu, relu_dot)
+        self.play(Create(relu_title))
+        self.play(Create(relu))
+        self.play(relu.animate.to_edge(LEFT))
+        self.play(Create(relu_ax), Create(relu_graph))
+        self.play(Create(relu_dot))
+        self.play(relu_t.animate.set_value(5))
 
         # self.play()
 
@@ -290,18 +320,32 @@ class NN(Slide):
 
         w1 = ValueTracker(0)
         w2 = ValueTracker(0)
-        b = ValueTracker(0)
 
-        w_text = MathTex(
-            f"w=[{w1.get_value():.2f},{w2.get_value():.2f}]", font_size=22)
-        w_text.to_edge(LEFT)
-        w_text.add_updater(
-            lambda m: m.become(
-                MathTex(f"w=[{w1.get_value():.2f},{w2.get_value():.2f}]", font_size=22).to_edge(LEFT))
+        w_text = Text("w=[", font_size=22)
+        w_end_text = Text("]", font_size=22)
+        w1_text = DecimalNumber(w1.get_value(), font_size=22)
+        w2_text = DecimalNumber(w2.get_value(), font_size=22)
+
+        w1_text.next_to(w_text, RIGHT)
+        w2_text.next_to(w1_text, RIGHT)
+        w_end_text.next_to(w2_text, RIGHT)
+        w_end_text.add_updater(
+            lambda m: m.next_to(w2_text, RIGHT)
         )
+        w1_text.add_updater(
+            lambda m: m.set_value(w1.get_value())
+        )
+        w2_text.add_updater(
+            lambda m: m.set_value(w2.get_value())
+        )
+
+        weights = VGroup(w_text, w_end_text, w1_text, w2_text)
+        weights.to_edge(LEFT)
 
         # self.add(layer1, layer2, layer3, output_layer, ls1, ls2, ls3)
         # self.add(input_vec)
+
+        # Animation Part 1
         self.play(Create(layer1), Create(layer2),
                   Create(layer3), Create(output_layer))
         self.play(Create(ls1), Create(ls2), Create(ls3))
@@ -310,10 +354,11 @@ class NN(Slide):
         # Forward prop
         # self.play(input_vec.animate.next_to(layer1, UP))
         # self.play(input_vec.animate.shift(DOWN*2.5).set_opacity(0))
-        self.play(input_vec.animate.become(input_dot))
-        self.play(Uncreate(input_vec), ShowPassingFlash(lsin.copy().set_color(
-            BLUE), run_time=0.5, time_width=0.5))
-        self.play(Create(w_text), run_time=1)
+        self.play(input_vec.animate.become(input_dot), Create(weights))
+        self.play(ShowPassingFlash(lsin.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5), Uncreate(input_vec), run_time=0.5)
+        # self.play(Create(w_text), Create(w1_text), Create(
+        #     w2_text), Create(w_end_text), run_time=1)
         self.play(layer1.animate.set_fill(
             WHITE, opacity=0.5), run_time=0.25)
         self.play(layer1.animate.set_fill(
@@ -348,7 +393,7 @@ class NN(Slide):
             YELLOW), run_time=0.25, time_width=0.5, reverse=True))
 
         self.play(
-            w1.animate.set_value(0.5), w2.animate.set_value(0.15),
+            w1.animate.set_value(5.5), w2.animate.set_value(4.15),
             run_time=0.5,
             rate_func=rate_functions.ease_in_out_cubic
         )
@@ -361,7 +406,124 @@ class NN(Slide):
         self.play(ShowPassingFlash(ls4.copy().set_color(
             YELLOW), run_time=0.25, time_width=0.5, reverse=True))
         self.play(
-            w1.animate.set_value(0.735), w2.animate.set_value(0.35),
+            w1.animate.set_value(7.35), w2.animate.set_value(6.35),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 3
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(8.47), w2.animate.set_value(7.64),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 4
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(9.35), w2.animate.set_value(8.41),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 5
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(9.87), w2.animate.set_value(8.73),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 5
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.29), w2.animate.set_value(9.13),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 6
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.44), w2.animate.set_value(9.35),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 7
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.57), w2.animate.set_value(9.37),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 8
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.64),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 9
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.67),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 10
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.68),
             run_time=0.5,
             rate_func=rate_functions.ease_in_out_cubic
         )
