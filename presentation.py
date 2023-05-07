@@ -192,8 +192,62 @@ class Preprocess(Slide):
 
         input_dot = Dot()
         # \\\\\\\\\\\\\\\\\\\\\\\\ End NN
+        # \\\\\\\\\\\\\\\\\ start vector space
 
-        # Animation Part 2
+        vs_ax = Axes(
+            x_range=[-4, 4, 1],
+            y_range=[-2, 2, 1],
+            tips=False,
+            axis_config={"include_numbers": True},
+        )
+
+        future_dot = Dot()
+        king_dot = Dot()
+        prince_dot = Dot()
+        daughter_dot = Dot()
+        princess_dot = Dot()
+        son_dot = Dot()
+        future = Text("future", font_size=12)
+
+        king = Text("king", font_size=12)
+
+        prince = Text("prince", font_size=12)
+
+        daughter = Text("daughter", font_size=12)
+
+        princess = Text("princess", font_size=12)
+
+        son = Text("son", font_size=12)
+
+        # self.add(vs_ax, center_dot, future_dot, king_dot, prince_dot,
+        #          daughter_dot, princess_dot, son_dot, future, king, prince, daughter, princess, son)
+
+        # //// Animation Part 3
+        self.play(Create(vs_ax), run_time=1)
+        self.play(LaggedStart(
+            future_dot.animate.move_to(vs_ax.c2p(-0.9, -1.1)),
+            king_dot.animate.move_to(vs_ax.c2p(-1.1, 0.8)),
+            prince_dot.animate.move_to(vs_ax.c2p(-0.65, -1.4)),
+            daughter_dot.animate.move_to(vs_ax.c2p(1.05, 0.6)),
+            princess_dot.animate.move_to(vs_ax.c2p(1.1, 1)),
+            son_dot.animate.move_to(vs_ax.c2p(-1.6, -0.9)),
+            lag_ratio=0.25,
+            run_time=1
+        ))
+        future.next_to(future_dot, RIGHT)
+        king.next_to(king_dot, RIGHT)
+        prince.next_to(prince_dot, RIGHT)
+        daughter.next_to(daughter_dot, RIGHT)
+        princess.next_to(princess_dot, RIGHT)
+        son.next_to(son_dot, RIGHT)
+
+        self.play(FadeIn(future), FadeIn(king), FadeIn(prince),
+                  FadeIn(daughter), FadeIn(princess), FadeIn(son), run_time=0.5)
+        self.play_next()
+
+        # \\\\\\\\\\\\\\\\\ end vector space
+
+        # //// Animation Part 2
 
         # self.play(one_hot_encoded_text.animate.next_to(layer1, LEFT*3))
         # input_dot.move_to(one_hot_encoded_text.get_center())
@@ -225,6 +279,8 @@ class Preprocess(Slide):
         #     WHITE, opacity=0.5), run_time=0.25)
         # self.play(layer3.animate.set_fill(
         #     WHITE, opacity=0), run_time=0.25)
+
+        # //// Animation Part 1
 
         # self.add(l1, l2, l3, pre_text, rem_text)
         # Animation Part 1
