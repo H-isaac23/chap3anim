@@ -62,6 +62,9 @@ class Archi(Slide):
 
         archi = VGroup(s1, s2, s3, s4, s5, s6)
         # self.add(a1, a2, a3, a4, a5, archi, title)
+        self.play(Create(archi), Create(a1), Create(a2), Create(
+            a3), Create(a4), Create(a5), Create(title))
+        self.play_next()
 
         """
         The future king is the prince
@@ -106,7 +109,7 @@ class Preprocess(Slide):
         one_hot_encoded.scale(0.5)
 
         one_hot_encoded_text = Text(
-            "[[1, 0, 0, 0, 0, 0]\n [1, 0, 0, 0, 0, 0]\n [..., ..., ..., ..., ..., ...]\n [1, 0, 0, 0, 0, 0]]",
+            "[[1, 0, 0, 0, 0, 0]\n [0, 1, 0, 0, 0, 0]\n [..., ..., ..., ..., ..., ...]\n [0, 0, 0, 0, 0, 1]]",
             font_size=24
         )
 
@@ -176,7 +179,6 @@ class Preprocess(Slide):
 
             for end in line_ends:
                 l = Line(line_start, end, stroke_width=0.75, color=GRAY)
-                l2 = Line(end, line_start, stroke_width=0.75, color=GRAY)
                 ls1.add(l)
 
         for n in layer2:
@@ -187,7 +189,6 @@ class Preprocess(Slide):
 
             for end in line_ends:
                 l = Line(line_start, end, stroke_width=0.75, color=GRAY)
-                l2 = Line(end, line_start, stroke_width=0.75, color=GRAY)
                 ls2.add(l)
 
         input_dot = Dot()
@@ -222,6 +223,84 @@ class Preprocess(Slide):
         # self.add(vs_ax, center_dot, future_dot, king_dot, prince_dot,
         #          daughter_dot, princess_dot, son_dot, future, king, prince, daughter, princess, son)
 
+        # \\\\\\\\\\\\\\\\\ end vector space
+
+        # //// Animation Part 1
+
+        # self.add(l1, l2, l3, pre_text, rem_text)
+        # Animation Part 1
+        self.play(Create(pre_text))
+        self.play_next()
+
+        self.play(Create(l1), Create(l2), Create(l3))
+        self.play_next()
+
+        self.play(Create(rem_text), run_time=0.5)
+        self.play(
+            l1.animate.become(rl1),
+            l2.animate.become(rl2),
+            l3.animate.become(rl3)
+        )
+        self.play_next()
+
+        self.play(Uncreate(rem_text), run_time=0.5)
+        self.play(Create(low_text), run_time=0.5)
+        self.play(l2.animate.become(ll2), l3.animate.become(ll3))
+        self.remove(l1, l2, l3)
+        self.add(to_table)
+        self.play_next()
+
+        self.play(Uncreate(low_text))
+        self.play(Create(ohe_text))
+        self.play(to_table.animate.become(one_hot_encoded))
+        self.play_next()
+
+        self.play(Uncreate(to_table), Create(one_hot_encoded_text))
+        self.play_next()
+
+        # one_hot_encoded_text.next_to(layer1, LEFT*3)
+        # self.add(one_hot_encoded_text, layer1, layer2, layer3, ls1, ls2)
+
+        # //// Animation Part 2
+
+        self.play(one_hot_encoded_text.animate.next_to(
+            layer1, LEFT*3), Uncreate(ohe_text))
+        input_dot.move_to(one_hot_encoded_text.get_center())
+
+        for n in layer1:
+            start = input_dot.get_center()
+            end = n.get_edge_center(LEFT)
+            l = Line(start, end, stroke_width=0.75, color=GRAY)
+            lsin.add(l)
+
+        self.play(Create(layer1), Create(layer2),
+                  Create(layer3), Create(ls1), Create(ls2))
+        self.play_next()
+
+        self.play(one_hot_encoded_text.animate.become(input_dot))
+        self.play(ShowPassingFlash(lsin.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5), Uncreate(one_hot_encoded_text), run_time=0.5)
+        self.play(layer1.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer1.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls1.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(layer2.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer2.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls2.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(layer3.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer3.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play_next()
+
+        self.play(Uncreate(layer3), Uncreate(layer2), Uncreate(
+            layer1), Uncreate(ls2), Uncreate(ls1))
+
         # //// Animation Part 3
         self.play(Create(vs_ax), run_time=1)
         self.play(LaggedStart(
@@ -245,75 +324,302 @@ class Preprocess(Slide):
                   FadeIn(daughter), FadeIn(princess), FadeIn(son), run_time=0.5)
         self.play_next()
 
-        # \\\\\\\\\\\\\\\\\ end vector space
+        self.play(Uncreate(future), Uncreate(king), Uncreate(prince),
+                  Uncreate(daughter), Uncreate(princess), Uncreate(son), run_time=0.5)
+        self.play(Uncreate(vs_ax), Uncreate(future_dot), Uncreate(king_dot), Uncreate(prince_dot),
+                  Uncreate(daughter_dot), Uncreate(princess_dot), Uncreate(son_dot), run_time=0.5)
+        self.play_next()
 
-        # //// Animation Part 2
 
-        # self.play(one_hot_encoded_text.animate.next_to(layer1, LEFT*3))
-        # input_dot.move_to(one_hot_encoded_text.get_center())
+class NN(Slide):
+    def play_next(self):
+        indicator = Arrow(buff=0.75)
+        indicator.to_edge(DOWN).to_edge(RIGHT)
 
-        # for n in layer1:
-        #     start = input_dot.get_center()
-        #     end = n.get_edge_center(LEFT)
-        #     l = Line(start, end, stroke_width=0.75, color=GRAY)
-        #     lsin.add(l)
+        self.play(FadeIn(indicator), run_time=0.75)
 
-        # self.play(Create(layer1), Create(layer2),
-        #           Create(layer3), Create(ls1), Create(ls2))
-        # self.play(one_hot_encoded_text.animate.become(input_dot))
-        # self.play(ShowPassingFlash(lsin.copy().set_color(
-        #     BLUE), run_time=0.5, time_width=0.5), Uncreate(one_hot_encoded_text), run_time=0.5)
-        # self.play(layer1.animate.set_fill(
-        #     WHITE, opacity=0.5), run_time=0.25)
-        # self.play(layer1.animate.set_fill(
-        #     WHITE, opacity=0), run_time=0.25)
-        # self.play(ShowPassingFlash(ls1.copy().set_color(
-        #     BLUE), run_time=0.5, time_width=0.5))
-        # self.play(layer2.animate.set_fill(
-        #     WHITE, opacity=0.5), run_time=0.25)
-        # self.play(layer2.animate.set_fill(
-        #     WHITE, opacity=0), run_time=0.25)
-        # self.play(ShowPassingFlash(ls2.copy().set_color(
-        #     BLUE), run_time=0.5, time_width=0.5))
-        # self.play(layer3.animate.set_fill(
-        #     WHITE, opacity=0.5), run_time=0.25)
-        # self.play(layer3.animate.set_fill(
-        #     WHITE, opacity=0), run_time=0.25)
+        self.wait(1)
+        self.next_slide()
+        self.play(Uncreate(indicator), run_time=0.75)
 
-        # //// Animation Part 1
+    def construct(self):
+        self.camera.background_color = "#141414"
 
-        # self.add(l1, l2, l3, pre_text, rem_text)
+        c1, c2, c3 = Circle(radius=0.25, color=WHITE, stroke_width=1.25), Circle(
+            radius=0.25, color=WHITE, stroke_width=1.25), Circle(radius=0.25, color=WHITE, stroke_width=1.25)
+        c1.next_to(c2, 2*UP)
+        c3.next_to(c2, 2*DOWN)
+
+        layer1 = VGroup(c1, c2, c3)
+        layer2 = layer1.copy()
+        layer3 = layer2.copy()
+        output_layer = Circle(radius=0.25, stroke_width=1.25, color=WHITE)
+
+        layer1.shift(2.5*LEFT)
+        layer3.shift(2.5*RIGHT)
+        output_layer.shift(5*RIGHT)
+
+        lsin = VGroup()
+        ls1 = VGroup()
+        ls2 = VGroup()
+        ls3 = VGroup()
+
+        ls4 = VGroup()
+        ls5 = VGroup()
+        ls6 = VGroup()
+
+        for n in layer1:
+            line_start = n.get_edge_center(RIGHT)
+            line_ends = []
+            for n_j in layer2:
+                line_ends.append(n_j.get_edge_center(LEFT))
+
+            for end in line_ends:
+                l = Line(line_start, end, stroke_width=0.75, color=GRAY)
+                l2 = Line(end, line_start, stroke_width=0.75, color=GRAY)
+                ls1.add(l)
+                ls4.add(l2)
+
+        for n in layer2:
+            line_start = n.get_edge_center(RIGHT)
+            line_ends = []
+            for n_j in layer3:
+                line_ends.append(n_j.get_edge_center(LEFT))
+
+            for end in line_ends:
+                l = Line(line_start, end, stroke_width=0.75, color=GRAY)
+                l2 = Line(end, line_start, stroke_width=0.75, color=GRAY)
+                ls2.add(l)
+                ls5.add(l2)
+
+        for n in layer3:
+            line_start = n.get_edge_center(RIGHT)
+            line_end = output_layer.get_edge_center(LEFT)
+            l = Line(line_start, line_end, stroke_width=0.75, color=GRAY)
+            l2 = Line(line_end, line_start, stroke_width=0.75, color=GRAY)
+
+            ls3.add(l)
+            ls6.add(l2)
+
+        input_vec = Matrix([[2], [3]])
+        input_vec.next_to(layer1, 3*LEFT).scale(0.6)
+        input_dot = Dot()
+        input_dot.move_to(input_vec.get_center())
+
+        for n in layer1:
+            start = input_dot.get_center()
+            end = n.get_edge_center(LEFT)
+            l = Line(start, end, stroke_width=0.75, color=GRAY)
+            lsin.add(l)
+
+        w1 = ValueTracker(0)
+        w2 = ValueTracker(0)
+
+        w_text = MathTex(r"w_1^{(1)}=[", font_size=22)
+        w_end_text = MathTex("]", font_size=22)
+        w1_text = DecimalNumber(w1.get_value(), font_size=22)
+        w2_text = DecimalNumber(w2.get_value(), font_size=22)
+
+        w1_text.next_to(w_text, RIGHT)
+        w2_text.next_to(w1_text, RIGHT)
+        w_end_text.next_to(w2_text, RIGHT)
+        w_end_text.add_updater(
+            lambda m: m.next_to(w2_text, RIGHT)
+        )
+        w1_text.add_updater(
+            lambda m: m.set_value(w1.get_value())
+        )
+        w2_text.add_updater(
+            lambda m: m.set_value(w2.get_value())
+        )
+
+        weights = VGroup(w_text, w_end_text, w1_text, w2_text)
+        weights.to_edge(LEFT)
+
+        # self.add(layer1, layer2, layer3, output_layer, ls1, ls2, ls3)
+        # self.add(input_vec)
+
         # Animation Part 1
-        # self.play(Create(pre_text))
-        # self.play_next()
+        self.play(Create(layer1), Create(layer2),
+                  Create(layer3), Create(output_layer))
+        self.play(Create(ls1), Create(ls2), Create(ls3))
+        self.play(Create(input_vec))
 
-        # self.play(Create(l1), Create(l2), Create(l3))
-        # self.play_next()
+        # Forward prop
+        # self.play(input_vec.animate.next_to(layer1, UP))
+        # self.play(input_vec.animate.shift(DOWN*2.5).set_opacity(0))
+        self.play(input_vec.animate.become(input_dot), Create(weights))
+        self.play(ShowPassingFlash(lsin.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5), Uncreate(input_vec), run_time=0.5)
+        # self.play(Create(w_text), Create(w1_text), Create(
+        #     w2_text), Create(w_end_text), run_time=1)
+        self.play(layer1.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer1.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls1.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(layer2.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer2.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls2.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(layer3.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(layer3.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
+        self.play(ShowPassingFlash(ls3.copy().set_color(
+            BLUE), run_time=0.5, time_width=0.5))
+        self.play(output_layer.animate.set_fill(
+            WHITE, opacity=0.5), run_time=0.25)
+        self.play(output_layer.animate.set_fill(
+            WHITE, opacity=0), run_time=0.25)
 
-        # self.play(Create(rem_text), run_time=0.5)
-        # self.play(
-        #     l1.animate.become(rl1),
-        #     l2.animate.become(rl2),
-        #     l3.animate.become(rl3)
-        # )
-        # self.play_next()
+        # Backprop
+        self.remove(ls1, ls2, ls3)
+        self.add(ls4, ls5, ls6)
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
 
-        # self.play(Uncreate(rem_text), run_time=0.5)
-        # self.play(Create(low_text), run_time=0.5)
-        # self.play(l2.animate.become(ll2), l3.animate.become(ll3))
-        # self.remove(l1, l2, l3)
-        # self.add(to_table)
-        # self.play_next()
+        self.play(
+            w1.animate.set_value(5.5), w2.animate.set_value(4.15),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
 
-        # self.play(Uncreate(low_text))
-        # self.play(Create(ohe_text))
-        # self.play(to_table.animate.become(one_hot_encoded))
-        # self.play_next()
+        # epoch 2
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(7.35), w2.animate.set_value(6.35),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
 
-        # self.play(Uncreate(to_table), Create(one_hot_encoded_text))
-        # self.play_next()
+        # epoch 3
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(8.47), w2.animate.set_value(7.64),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
 
-        # one_hot_encoded_text.next_to(layer1, LEFT*3)
-        # self.add(one_hot_encoded_text, layer1, layer2, layer3, ls1, ls2)
+        # epoch 4
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(9.35), w2.animate.set_value(8.41),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
 
-        # self.wait(3)
+        # epoch 5
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(9.87), w2.animate.set_value(8.73),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 5
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.29), w2.animate.set_value(9.13),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 6
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.44), w2.animate.set_value(9.35),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 7
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.57), w2.animate.set_value(9.37),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 8
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.64),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 9
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.67),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        # epoch 10
+        self.play(ShowPassingFlash(ls6.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls5.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(ShowPassingFlash(ls4.copy().set_color(
+            YELLOW), run_time=0.25, time_width=0.5, reverse=True))
+        self.play(
+            w1.animate.set_value(10.68),
+            run_time=0.5,
+            rate_func=rate_functions.ease_in_out_cubic
+        )
+
+        self.wait(3)
