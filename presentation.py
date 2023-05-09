@@ -3,7 +3,7 @@ from manim_slides import Slide
 import math
 
 
-class Archi(Slide):
+class ArchiO(Slide):
     def play_next(self):
         indicator = Arrow(buff=0.75)
         indicator.to_edge(DOWN).to_edge(RIGHT)
@@ -16,16 +16,23 @@ class Archi(Slide):
 
     def construct(self):
         self.camera.background_color = "#002845"
-        # self.play_next()
-        title = Text("Architecture", font_size=24)
+        self.play_next()
+        title = Text("Architecture", font_size=30)
         title.to_edge(UP)
 
-        s1 = Text("Load and Preprocess PDF", font_size=24)
-        s2 = Text("Embed to Vector Database", font_size=24)
-        s3 = Text("Load Model, Agents, and Tools", font_size=24)
-        s4 = Text("Create Chain", font_size=24)
-        s5 = Text("Perform chain calls", font_size=24)
-        s6 = Text("Get output", font_size=24)
+        s1 = Text("Load and Preprocess PDF", font_size=30)
+        s2 = Text("Embed to Vector Database", font_size=30)
+        s3 = Text("Load Model, Agents, and Tools", font_size=30)
+        s4 = Text("Create Chain", font_size=30)
+        s5 = Text("Perform chain calls", font_size=30)
+        s6 = Text("Get output", font_size=30)
+        title.scale(0.8)
+        s1.scale(0.8)
+        s2.scale(0.8)
+        s3.scale(0.8)
+        s4.scale(0.8)
+        s5.scale(0.8)
+        s6.scale(0.8)
 
         s1.to_edge(LEFT).shift(UP * 2)
         s2.next_to(s1, DOWN * 5)
@@ -63,12 +70,6 @@ class Archi(Slide):
         self.play(archi.animate.set_opacity(1), arrows.animate.set_opacity(1))
         self.play(Uncreate(archi), Uncreate(arrows), Uncreate(title))
         self.play_next()
-
-        """
-        The future king is the prince
-        Daughter is the princess
-        Son is the prince
-        """
 
 
 class Preprocess(Slide):
@@ -369,6 +370,7 @@ class Preprocess(Slide):
             Uncreate(daughter_dot),
             Uncreate(princess_dot),
             Uncreate(son_dot),
+            Uncreate(pre_text),
             run_time=0.5,
         )
         self.play_next()
@@ -1036,10 +1038,8 @@ class Transformer(Slide):
 
     def construct(self):
         self.camera.background_color = "#002845"
-        title = Text("Transformer:", font_size=26)
-        atten = Text("Attention", font_size=26)
+        title = Text("Transformer Model", font_size=26)
         title.to_corner(UL)
-        atten.next_to(title, RIGHT)
 
         q = Text("Query", font_size=26, color=BLUE)
         k = Text("Key", font_size=26, color=YELLOW)
@@ -1047,4 +1047,286 @@ class Transformer(Slide):
         q.next_to(k, UP * 1.5)
         v.next_to(v, DOWN * 1.5)
 
-        self.add(title, atten, q, k, v)
+        w = Text("That was not fun", font_size=26)
+        w1 = Text("That", font_size=26)
+        w2 = Text("was", font_size=26)
+        w3 = Text("not", font_size=26)
+        w4 = Text("fun", font_size=26)
+        w1.next_to(w2, UP)
+        w3.next_to(w2, DOWN)
+        w4.next_to(w3, DOWN)
+
+        q2 = MathTex("q_2", font_size=26)
+        k1 = MathTex("k_1", font_size=26)
+        k3 = MathTex("k_3", font_size=26)
+        k4 = MathTex("k_4", font_size=26)
+        k1.next_to(w1, RIGHT)
+        k3.next_to(w3, RIGHT)
+        k4.next_to(w4, RIGHT)
+
+        a21 = MathTex(r"=a_{1}", font_size=26)
+        a23 = MathTex(r"=a_{2}", font_size=26)
+        a24 = MathTex(r"=a_{3}", font_size=26)
+
+        norm = MathTex(
+            r"<a_1, a_2, a_3, a_4> = softmax(\frac{<a_1, a_2, a_3, a_4>}{\sqrt{d_k}})",
+            font_size=30,
+        )
+        out = MathTex(
+            r"a_1*v_1 + a_2*v_2 + a_3*v_3 + a_4*v_4",
+            font_size=30,
+        )
+        out.next_to(norm, DOWN)
+
+        # self.add(title, atten, q, k, v)
+        # self.add(title, atten, w1, w2, w3, w4)
+        self.play(Create(title))
+        self.play_next()
+
+        self.play(Create(q), Create(k), Create(v))
+        self.play_next()
+
+        self.play(Uncreate(q), Uncreate(k), Uncreate(v))
+        self.play(Create(w))
+        self.play_next()
+
+        self.play(FadeOut(w), run_time=0.75)
+        self.play(FadeIn(w1), FadeIn(w2), FadeIn(w3), FadeIn(w4), run_time=0.75)
+        self.play_next()
+
+        self.play(w2.animate.shift(LEFT * 3))
+        q2.next_to(w2, DOWN)
+        l1 = Line(
+            w2.get_edge_center(RIGHT),
+            w1.get_edge_center(LEFT),
+        )
+        l2 = Line(
+            w2.get_edge_center(RIGHT),
+            w3.get_edge_center(LEFT),
+        )
+        l3 = Line(
+            w2.get_edge_center(RIGHT),
+            w4.get_edge_center(LEFT),
+        )
+
+        self.play(
+            ShowPassingFlash(l1, time_width=2, run_time=1.5),
+            ShowPassingFlash(l2, time_width=2, run_time=1.5),
+            ShowPassingFlash(l3, time_width=2, run_time=1.5),
+        )
+        self.play_next()
+
+        self.play(FadeIn(k1), FadeIn(q2), FadeIn(k3), FadeIn(k4), run_time=0.75)
+        self.play_next()
+
+        self.play(k1.animate.next_to(q2, RIGHT), run_time=0.5)
+        a21.next_to(k1, RIGHT)
+        self.play(FadeIn(a21))
+        self.play_next()
+
+        self.play(
+            k1.animate.next_to(w1, RIGHT),
+            k3.animate.next_to(q2, RIGHT),
+            FadeOut(a21),
+            run_time=0.5,
+        )
+        a23.next_to(k3, RIGHT)
+        self.play(FadeIn(a23))
+        self.play_next()
+
+        self.play(
+            k3.animate.next_to(w3, RIGHT),
+            k4.animate.next_to(q2, RIGHT),
+            FadeOut(a23),
+            run_time=0.5,
+        )
+        a24.next_to(k4, RIGHT)
+        self.play(FadeIn(a24))
+        self.play_next()
+
+        self.play(k4.animate.next_to(w4, RIGHT), FadeOut(a24), run_time=0.5)
+        self.play_next()
+
+        self.play(FadeOut(w1, w2, w3, w4, k1, q2, k3, k4))
+        self.play(FadeIn(norm))
+        self.play_next()
+
+        self.play(FadeIn(out))
+        self.play_next()
+
+        self.play(FadeOut(out, norm, title))
+        self.play_next()
+
+
+class Agents(Slide):
+    def play_next(self):
+        indicator = Arrow(buff=0.75)
+        indicator.to_edge(DOWN).to_edge(RIGHT)
+
+        self.play(FadeIn(indicator), run_time=0.75)
+
+        self.wait(1)
+        self.next_slide()
+        self.play(Uncreate(indicator), run_time=0.75)
+
+    def construct(self):
+        self.camera.background_color = "#002845"
+        agent = Text("Agent", font_size=30)
+        agent_desc = Text(
+            "Used to determine which actions to take and in what order.", font_size=30
+        )
+        agent.next_to(agent_desc, UP)
+
+        tool = Text("Tools", font_size=30)
+        tool_desc = Text(
+            "Functions that agents can use to interact with the world.", font_size=30
+        )
+        tool.next_to(tool_desc, UP)
+
+        source = Text("Definition is from the LangChain documentation.", font_size=30)
+        source.scale(0.5).to_corner(DL)
+
+        self.play(FadeIn(source), run_time=0.5)
+        self.play(Write(agent))
+        self.play(Write(agent_desc))
+        self.play_next()
+
+        self.play(FadeOut(agent, agent_desc))
+        self.play(Write(tool))
+        self.play(Write(tool_desc))
+        self.play_next()
+
+        self.play(FadeOut(tool, tool_desc, source))
+        self.play_next()
+
+
+class ArchiS(Slide):
+    def play_next(self):
+        indicator = Arrow(buff=0.75)
+        indicator.to_edge(DOWN).to_edge(RIGHT)
+
+        self.play(FadeIn(indicator), run_time=0.75)
+
+        self.wait(1)
+        self.next_slide()
+        self.play(Uncreate(indicator), run_time=0.75)
+
+    def construct(self):
+        self.camera.background_color = "#002845"
+        # self.play_next()
+        title = Text("Architecture", font_size=30)
+        title.to_edge(UP)
+
+        s1 = Text("Load and Preprocess PDF", font_size=30)
+        s2 = Text("Embed to Vector Database", font_size=30)
+        s3 = Text("Load Model, Agents, and Tools", font_size=30)
+        s4 = Text("Create Chain", font_size=30)
+        s5 = Text("Perform chain calls", font_size=30)
+        s6 = Text("Get output", font_size=30)
+        title.scale(0.8)
+        s1.scale(0.8)
+        s2.scale(0.8)
+        s3.scale(0.8)
+        s4.scale(0.8)
+        s5.scale(0.8)
+        s6.scale(0.8)
+
+        s1.to_edge(LEFT).shift(UP * 2)
+        s2.next_to(s1, DOWN * 5)
+        s3.next_to(s2, RIGHT * 4)
+        s4.next_to(s3, RIGHT * 4)
+        s5.next_to(s4, DOWN * 5)
+        s6.next_to(s5, DOWN * 5)
+
+        a1 = Arrow(s1.get_edge_center(DOWN), s2.get_edge_center(UP))
+        a2 = Arrow(s2.get_edge_center(RIGHT), s3.get_edge_center(LEFT))
+        a3 = Arrow(s3.get_edge_center(RIGHT), s4.get_edge_center(LEFT))
+        a4 = Arrow(s4.get_edge_center(DOWN), s5.get_edge_center(UP))
+        a5 = Arrow(s5.get_edge_center(DOWN), s6.get_edge_center(UP))
+
+        # s4.shift(UP*0.05)
+        s3.shift(DOWN * 0.05)
+
+        archi = VGroup(s1, s2, s3, s4, s5, s6)
+        arrows = VGroup(a1, a2, a3, a4, a5)
+        # self.add(a1, a2, a3, a4, a5, archi, title)
+        self.play(Create(archi), Create(arrows), Create(title))
+        self.play_next()
+
+        sr = SurroundingRectangle(s3, color=WHITE)
+        self.play(archi.animate.set_opacity(0.3), arrows.animate.set_opacity(0.3))
+        self.play(
+            archi.submobjects[2].animate.set_opacity(1),
+            ShowPassingFlash(sr, run_time=1, time_width=1),
+        )
+        self.play_next()
+
+        self.play(archi.animate.set_opacity(1), arrows.animate.set_opacity(1))
+        self.play(Uncreate(archi), Uncreate(arrows), Uncreate(title))
+        self.play_next()
+
+
+class ArchiT(Slide):
+    def play_next(self):
+        indicator = Arrow(buff=0.75)
+        indicator.to_edge(DOWN).to_edge(RIGHT)
+
+        self.play(FadeIn(indicator), run_time=0.75)
+
+        self.wait(1)
+        self.next_slide()
+        self.play(Uncreate(indicator), run_time=0.75)
+
+    def construct(self):
+        self.camera.background_color = "#002845"
+        # self.play_next()
+        title = Text("Architecture", font_size=30)
+        title.to_edge(UP)
+
+        s1 = Text("Load and Preprocess PDF", font_size=30)
+        s2 = Text("Embed to Vector Database", font_size=30)
+        s3 = Text("Load Model, Agents, and Tools", font_size=30)
+        s4 = Text("Create Chain", font_size=30)
+        s5 = Text("Perform chain calls", font_size=30)
+        s6 = Text("Get output", font_size=30)
+        title.scale(0.8)
+        s1.scale(0.8)
+        s2.scale(0.8)
+        s3.scale(0.8)
+        s4.scale(0.8)
+        s5.scale(0.8)
+        s6.scale(0.8)
+
+        s1.to_edge(LEFT).shift(UP * 2)
+        s2.next_to(s1, DOWN * 5)
+        s3.next_to(s2, RIGHT * 4)
+        s4.next_to(s3, RIGHT * 4)
+        s5.next_to(s4, DOWN * 5)
+        s6.next_to(s5, DOWN * 5)
+
+        a1 = Arrow(s1.get_edge_center(DOWN), s2.get_edge_center(UP))
+        a2 = Arrow(s2.get_edge_center(RIGHT), s3.get_edge_center(LEFT))
+        a3 = Arrow(s3.get_edge_center(RIGHT), s4.get_edge_center(LEFT))
+        a4 = Arrow(s4.get_edge_center(DOWN), s5.get_edge_center(UP))
+        a5 = Arrow(s5.get_edge_center(DOWN), s6.get_edge_center(UP))
+
+        # s4.shift(UP*0.05)
+        s3.shift(DOWN * 0.05)
+
+        archi = VGroup(s1, s2, s3, s4, s5, s6)
+        arrows = VGroup(a1, a2, a3, a4, a5)
+        # self.add(a1, a2, a3, a4, a5, archi, title)
+        self.play(Create(archi), Create(arrows), Create(title))
+        self.play_next()
+
+        self.play(archi.animate.set_opacity(0.3), arrows.animate.set_opacity(0.3))
+        self.play(
+            archi.submobjects[3].animate.set_opacity(1),
+            archi.submobjects[3].animate.set_opacity(1),
+            archi.submobjects[3].animate.set_opacity(1),
+        )
+        self.play_next()
+
+        self.play(archi.animate.set_opacity(1), arrows.animate.set_opacity(1))
+        self.play(Uncreate(archi), Uncreate(arrows), Uncreate(title))
+        self.play_next()
